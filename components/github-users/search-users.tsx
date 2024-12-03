@@ -38,7 +38,8 @@ export const SearchUsers = ({
 
 const styles = StyleSheet.create({
   searchInput: {
-    marginBottom: 20,
+    marginHorizontal: 16,
+    marginVertical: 8,
     alignSelf: "stretch",
   },
   searchButton: {
