@@ -1,4 +1,4 @@
-import { GithubService } from "./GithubService";
+import { GithubService } from "../GithubService";
 
 const mockFetch = jest.fn();
 
@@ -21,7 +21,7 @@ describe("GithubService", () => {
       });
 
       const result = await githubService["fetchJson"]<{ key: string }>(
-        `${mockBaseUrl}/example-endpoint`,
+        `${mockBaseUrl}/example-endpoint`
       );
 
       expect(mockFetch).toHaveBeenCalledWith(`${mockBaseUrl}/example-endpoint`);
@@ -36,7 +36,7 @@ describe("GithubService", () => {
       });
 
       await expect(
-        githubService["fetchJson"](`${mockBaseUrl}/example-endpoint`),
+        githubService["fetchJson"](`${mockBaseUrl}/example-endpoint`)
       ).rejects.toThrow("Error fetching data: 404 Not Found");
     });
   });
@@ -59,7 +59,7 @@ describe("GithubService", () => {
       const result = await githubService.getUserProfile(username);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        `${mockBaseUrl}/search/users?q=${username}&per_page=5`,
+        `${mockBaseUrl}/search/users?q=${username}&per_page=5`
       );
       expect(result).toEqual(mockResponse.items);
     });
@@ -95,7 +95,7 @@ describe("GithubService", () => {
       const result = await githubService.getRepositoriesByUsername(username);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        `${mockBaseUrl}/users/${username}/repos`,
+        `${mockBaseUrl}/users/${username}/repos`
       );
       expect(result).toEqual(mockResponse);
     });
@@ -108,7 +108,7 @@ describe("GithubService", () => {
       });
 
       await expect(
-        githubService.getRepositoriesByUsername("testUser"),
+        githubService.getRepositoriesByUsername("testUser")
       ).rejects.toThrow("Error fetching data: 500 Internal Server Error");
     });
   });

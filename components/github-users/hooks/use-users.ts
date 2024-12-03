@@ -1,32 +1,21 @@
 import { GithubService } from "@/app/services/GithubService";
-import { IGithubUserDto } from "@/app/types/dto";
-import { QueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export const useUsers = () => {
-  const [githubUsers, setGithubUsers] = useState<IGithubUserDto[]>([]);
-  const [isGithubProfilesLoading, setIsGithubProfilesLoading] = useState(false);
+export const useUsers = (username: string) => {
   const githubService = new GithubService();
-  const queryClient = new QueryClient();
-
-  const fetchUsers = async (username: string) => {
-    try {
-      setIsGithubProfilesLoading(true);
-      const data = await queryClient.fetchQuery({
-        queryKey: ["users"],
-        queryFn: () => githubService.getUserProfile(username),
-      });
-
-      setGithubUsers(data);
-      setIsGithubProfilesLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {
+    data: githubUsers = [],
+    isLoading: isGithubProfilesLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => githubService.getUserProfile(username),
+    enabled: !!username,
+  });
 
   return {
     githubUsers,
     isGithubProfilesLoading,
-    fetchUsers,
+    fetchUsers: refetch,
   };
 };

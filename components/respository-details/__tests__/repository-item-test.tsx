@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { RepositoryItem } from "./repository-item";
+import { RepositoryItem } from "../repository-item";
 import { List } from "react-native-paper";
 
 describe("RepositoryItem", () => {

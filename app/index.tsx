@@ -6,9 +6,11 @@ import { Image } from "expo-image";
 import { GithubUsers } from "@/components/github-users/github-users";
 import { useUsers } from "@/components/github-users/hooks/use-users";
 import { SearchUsers } from "@/components/github-users/search-users";
+import { useState } from "react";
 
 export default function HomeScreen() {
-  const { githubUsers, isGithubProfilesLoading, fetchUsers } = useUsers();
+  const [username, setUsername] = useState("");
+  const { githubUsers, isGithubProfilesLoading } = useUsers(username);
 
   return (
     <View>
@@ -31,7 +33,7 @@ export default function HomeScreen() {
 
       <SearchUsers
         isGithubProfilesLoading={isGithubProfilesLoading}
-        fetchUsers={fetchUsers}
+        onClick={(username: string) => setUsername(username)}
       />
 
       <View style={styles.content}>

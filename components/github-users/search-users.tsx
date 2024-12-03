@@ -4,12 +4,12 @@ import { Button, MD3DarkTheme, TextInput } from "react-native-paper";
 
 interface ISearchUsersProps {
   isGithubProfilesLoading: boolean;
-  fetchUsers: (username: string) => void;
+  onClick: (username: string) => void;
 }
 
 export const SearchUsers = ({
   isGithubProfilesLoading,
-  fetchUsers,
+  onClick,
 }: ISearchUsersProps) => {
   const [githubProfile, setGithubProfile] = useState("");
 
@@ -28,7 +28,7 @@ export const SearchUsers = ({
         mode="text"
         icon="card-search-outline"
         loading={isGithubProfilesLoading}
-        onPress={() => fetchUsers(githubProfile)}
+        onPress={() => onClick(githubProfile)}
       >
         Search
       </Button>

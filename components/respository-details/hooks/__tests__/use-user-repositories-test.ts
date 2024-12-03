@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { GithubService } from "@/app/services/GithubService";
-import { useUserRepositories } from "./use-user-repositories";
+import { useUserRepositories } from "../use-user-repositories";
 
 jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
@@ -56,7 +56,7 @@ describe("useUserRepositories", () => {
     expect(result.current.userRepositories).toEqual(mockRepositories);
     expect(result.current.isUserRepositoryFetching).toBe(false);
     expect(mockGithubService.getRepositoriesByUsername).toHaveBeenCalledWith(
-      "testUser",
+      "testUser"
     );
   });
 

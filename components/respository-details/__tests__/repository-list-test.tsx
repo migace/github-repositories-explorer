@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { RepositoriesList } from "./repositories-list";
+import { RepositoriesList } from "../repositories-list";
 
 describe("RepositoriesList", () => {
   const mockRepositories: any[] = [
@@ -10,7 +10,7 @@ describe("RepositoriesList", () => {
 
   it("renders repository items when data is provided", () => {
     const { getByText } = render(
-      <RepositoriesList userRepositories={mockRepositories} />,
+      <RepositoriesList userRepositories={mockRepositories} />
     );
 
     expect(getByText("repo1")).toBeTruthy();
@@ -25,11 +25,11 @@ describe("RepositoriesList", () => {
 
   it("renders the correct number of repository items", () => {
     const { getAllByTestId } = render(
-      <RepositoriesList userRepositories={mockRepositories} />,
+      <RepositoriesList userRepositories={mockRepositories} />
     );
 
     expect(getAllByTestId("repository-item").length).toBe(
-      mockRepositories.length,
+      mockRepositories.length
     );
   });
 });
