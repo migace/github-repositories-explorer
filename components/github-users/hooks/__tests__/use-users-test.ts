@@ -1,15 +1,7 @@
-import { renderHook } from "@testing-library/react-hooks";
-import { useUsers } from "./use-users";
-
-jest.mock("@tanstack/react-query", () => {
-  const original = jest.requireActual("@tanstack/react-query");
-  return {
-    ...original,
-    QueryClient: jest.fn().mockImplementation(() => ({
-      fetchQuery: jest.fn(),
-    })),
-  };
-});
+import { renderHook } from "@testing-library/react-native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
+import { useUsers } from "../use-users";
 
 jest.mock("@/app/services/GithubService", () => {
   return {
@@ -19,9 +11,21 @@ jest.mock("@/app/services/GithubService", () => {
   };
 });
 
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(QueryClientProvider, { client: queryClient }, children);
+  Wrapper.displayName = "QueryClientWrapper";
+  return Wrapper;
+};
+
 describe("useUsers hook", () => {
-  it("should initialize with default values", () => {
-    const { result } = renderHook(() => useUsers());
+  it("should initialize with default values when no username provided", () => {
+    const { result } = renderHook(() => useUsers(""), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.githubUsers).toEqual([]);
     expect(result.current.isGithubProfilesLoading).toBe(false);

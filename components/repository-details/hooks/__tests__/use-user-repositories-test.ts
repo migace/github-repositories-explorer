@@ -1,7 +1,7 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook, waitFor } from "@testing-library/react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { GithubService } from "@/app/services/GithubService";
+import { githubService } from "@/app/services/GithubService";
 import { useUserRepositories } from "../use-user-repositories";
 
 jest.mock("@tanstack/react-query", () => ({
@@ -10,19 +10,13 @@ jest.mock("@tanstack/react-query", () => ({
 jest.mock("expo-router", () => ({
   useLocalSearchParams: jest.fn(),
 }));
-jest.mock("@/app/services/GithubService");
+jest.mock("@/app/services/GithubService", () => ({
+  githubService: {
+    getRepositoriesByUsername: jest.fn(),
+  },
+}));
 
 describe("useUserRepositories", () => {
-  let mockGithubService: jest.Mocked<GithubService>;
-
-  beforeEach(() => {
-    mockGithubService = new GithubService() as jest.Mocked<GithubService>;
-
-    mockGithubService.getRepositoriesByUsername = jest.fn();
-
-    (GithubService as jest.Mock).mockImplementation(() => mockGithubService);
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -39,23 +33,23 @@ describe("useUserRepositories", () => {
 
     (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
       queryFn();
-
       return {
         data: mockRepositories,
         isFetching: false,
-        queryFn: jest.fn().mockResolvedValueOnce(mockRepositories),
+        isError: false,
+        error: null,
       };
     });
 
-    const { result, waitFor } = renderHook(() => useUserRepositories());
+    const { result } = renderHook(() => useUserRepositories());
 
     await waitFor(() => {
-      return result.current.userRepositories.length > 0;
+      expect(result.current.userRepositories.length).toBeGreaterThan(0);
     });
 
     expect(result.current.userRepositories).toEqual(mockRepositories);
     expect(result.current.isUserRepositoryFetching).toBe(false);
-    expect(mockGithubService.getRepositoriesByUsername).toHaveBeenCalledWith(
+    expect(githubService.getRepositoriesByUsername).toHaveBeenCalledWith(
       "testUser"
     );
   });
@@ -66,13 +60,15 @@ describe("useUserRepositories", () => {
     (useQuery as jest.Mock).mockReturnValue({
       data: [],
       isFetching: false,
+      isError: false,
+      error: null,
     });
 
     const { result } = renderHook(() => useUserRepositories());
 
     expect(result.current.userRepositories).toEqual([]);
     expect(result.current.isUserRepositoryFetching).toBe(false);
-    expect(mockGithubService.getRepositoriesByUsername).not.toHaveBeenCalled();
+    expect(githubService.getRepositoriesByUsername).not.toHaveBeenCalled();
   });
 
   it("should handle loading state correctly", () => {
@@ -83,11 +79,32 @@ describe("useUserRepositories", () => {
     (useQuery as jest.Mock).mockReturnValue({
       data: [],
       isFetching: true,
+      isError: false,
+      error: null,
     });
 
     const { result } = renderHook(() => useUserRepositories());
 
     expect(result.current.isUserRepositoryFetching).toBe(true);
     expect(result.current.userRepositories).toEqual([]);
+  });
+
+  it("should expose error state when fetch fails", () => {
+    (useLocalSearchParams as jest.Mock).mockReturnValue({
+      username: "testUser",
+    });
+
+    const mockError = new Error("Network error");
+    (useQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isFetching: false,
+      isError: true,
+      error: mockError,
+    });
+
+    const { result } = renderHook(() => useUserRepositories());
+
+    expect(result.current.isUserRepositoryError).toBe(true);
+    expect(result.current.userRepositoryError).toBe(mockError);
   });
 });

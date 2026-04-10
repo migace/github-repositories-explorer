@@ -6,11 +6,29 @@ import { Image } from "expo-image";
 import { GithubUsers } from "@/components/github-users/github-users";
 import { useUsers } from "@/components/github-users/hooks/use-users";
 import { SearchUsers } from "@/components/github-users/search-users";
+import { ErrorState } from "@/components/error-state";
 import { useState } from "react";
 
 export default function HomeScreen() {
   const [username, setUsername] = useState("");
-  const { githubUsers, isGithubProfilesLoading } = useUsers(username);
+  const { githubUsers, isGithubProfilesLoading, isGithubProfilesError } =
+    useUsers(username);
+
+  const renderContent = () => {
+    if (isGithubProfilesError) {
+      return (
+        <ErrorState message="Failed to load users. Check your connection or try again." />
+      );
+    }
+    if (githubUsers.length > 0) {
+      return (
+        <ScrollView style={styles.users}>
+          <GithubUsers users={githubUsers} />
+        </ScrollView>
+      );
+    }
+    return null;
+  };
 
   return (
     <View>
@@ -33,16 +51,10 @@ export default function HomeScreen() {
 
       <SearchUsers
         isGithubProfilesLoading={isGithubProfilesLoading}
-        onClick={(username: string) => setUsername(username)}
+        onClick={(value: string) => setUsername(value)}
       />
 
-      <View style={styles.content}>
-        {githubUsers.length ? (
-          <ScrollView style={styles.users}>
-            <GithubUsers users={githubUsers} />
-          </ScrollView>
-        ) : null}
-      </View>
+      <View style={styles.content}>{renderContent()}</View>
     </View>
   );
 }

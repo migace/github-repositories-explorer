@@ -2,14 +2,23 @@ import { IGithubRepositoryDto, IGithubUserDto } from "../types/dto";
 import { IGithubUsersResponse } from "../types/github";
 
 export class GithubService {
-  baseUrl: string;
+  private readonly baseUrl: string;
+  private readonly token: string | undefined;
 
-  constructor(baseUrl = process.env.EXPO_PUBLIC_GITHUB_API_URL || "") {
+  constructor(
+    baseUrl = process.env.EXPO_PUBLIC_GITHUB_API_URL || "",
+    token = process.env.EXPO_PUBLIC_GITHUB_TOKEN,
+  ) {
     this.baseUrl = baseUrl;
+    this.token = token;
+  }
+
+  private get authHeaders(): HeadersInit {
+    return this.token ? { Authorization: `Bearer ${this.token}` } : {};
   }
 
   private async fetchJson<T>(url: string): Promise<T> {
-    const response = await fetch(url);
+    const response = await fetch(url, { headers: this.authHeaders });
 
     if (!response.ok) {
       throw new Error(
@@ -17,7 +26,7 @@ export class GithubService {
       );
     }
 
-    return await response.json();
+    return response.json();
   }
 
   async getUserProfile(username: string): Promise<IGithubUserDto[]> {
@@ -35,3 +44,5 @@ export class GithubService {
     );
   }
 }
+
+export const githubService = new GithubService();

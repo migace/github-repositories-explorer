@@ -8,7 +8,7 @@ describe("GithubService", () => {
 
   beforeEach(() => {
     mockFetch.mockClear();
-    global.fetch = mockFetch;
+    globalThis.fetch = mockFetch as typeof fetch;
     githubService = new GithubService(mockBaseUrl);
   });
 
@@ -24,7 +24,9 @@ describe("GithubService", () => {
         `${mockBaseUrl}/example-endpoint`
       );
 
-      expect(mockFetch).toHaveBeenCalledWith(`${mockBaseUrl}/example-endpoint`);
+      expect(mockFetch).toHaveBeenCalledWith(`${mockBaseUrl}/example-endpoint`, {
+        headers: {},
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -59,7 +61,8 @@ describe("GithubService", () => {
       const result = await githubService.getUserProfile(username);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        `${mockBaseUrl}/search/users?q=${username}&per_page=5`
+        `${mockBaseUrl}/search/users?q=${username}&per_page=5`,
+        { headers: {} }
       );
       expect(result).toEqual(mockResponse.items);
     });
@@ -95,7 +98,8 @@ describe("GithubService", () => {
       const result = await githubService.getRepositoriesByUsername(username);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        `${mockBaseUrl}/users/${username}/repos`
+        `${mockBaseUrl}/users/${username}/repos`,
+        { headers: {} }
       );
       expect(result).toEqual(mockResponse);
     });

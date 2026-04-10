@@ -2,14 +2,22 @@ import { StyleSheet, View } from "react-native";
 import { MD3DarkTheme, Text } from "react-native-paper";
 import { Image } from "expo-image";
 import { LoadingState } from "@/components/loading-state";
-import { RepositoriesList } from "@/components/respository-details/repositories-list";
-import { useUserRepositories } from "@/components/respository-details/hooks/use-user-repositories";
+import { ErrorState } from "@/components/error-state";
+import { RepositoriesList } from "@/components/repository-details/repositories-list";
+import { useUserRepositories } from "@/components/repository-details/hooks/use-user-repositories";
 
 export default function RepositoryDetails() {
-  const { userRepositories, isUserRepositoryFetching } = useUserRepositories();
+  const { userRepositories, isUserRepositoryFetching, isUserRepositoryError } =
+    useUserRepositories();
 
   if (isUserRepositoryFetching) {
     return <LoadingState />;
+  }
+
+  if (isUserRepositoryError) {
+    return (
+      <ErrorState message="Failed to load repositories. Check your connection or try again." />
+    );
   }
 
   return (
