@@ -45,6 +45,15 @@ export class GithubService {
       `${this.baseUrl}/users/${username}/repos?per_page=${perPage}&page=${page}`,
     );
   }
+
+  async getRepositoryByName(
+    owner: string,
+    repo: string,
+  ): Promise<IGithubRepositoryDto> {
+    return this.fetchJson<IGithubRepositoryDto>(
+      `${this.baseUrl}/repos/${owner}/${repo}`,
+    );
+  }
 }
 
 export const githubService = new GithubService();

@@ -8,6 +8,7 @@ describe("RepositoryItem", () => {
     name: "Test Repository",
     description: "This is a test repository",
     stargazers_count: 42,
+    username: "testuser",
   };
 
   it("renders the repository name", () => {
@@ -28,7 +29,6 @@ describe("RepositoryItem", () => {
   it("renders the star icon", () => {
     const { UNSAFE_getByType } = render(<RepositoryItem {...mockProps} />);
     const starIcon = UNSAFE_getByType(List.Icon);
-
     expect(starIcon).toBeTruthy();
   });
 });

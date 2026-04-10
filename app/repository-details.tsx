@@ -1,10 +1,12 @@
 import { StyleSheet, View } from "react-native";
-import { MD3DarkTheme, Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
 import { RepositoriesList } from "@/components/repository-details/repositories-list";
+import { SortFilterBar } from "@/components/repository-details/sort-filter-bar";
 import { useUserRepositories } from "@/components/repository-details/hooks/use-user-repositories";
+import { useSortFilter } from "@/components/repository-details/hooks/use-sort-filter";
 
 export default function RepositoryDetails() {
   const {
@@ -15,6 +17,17 @@ export default function RepositoryDetails() {
     hasNextPage,
     isFetchingNextPage,
   } = useUserRepositories();
+
+  const {
+    sort,
+    setSort,
+    languageFilter,
+    setLanguageFilter,
+    availableLanguages,
+    filteredAndSorted,
+  } = useSortFilter(userRepositories);
+
+  const { colors } = useTheme();
 
   if (isUserRepositoryFetching && userRepositories.length === 0) {
     return <LoadingState />;
@@ -27,7 +40,7 @@ export default function RepositoryDetails() {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { backgroundColor: colors.backdrop }]}>
       {userRepositories.length > 0 && (
         <View style={styles.headerWrapper}>
           <View style={styles.headerContent}>
@@ -36,13 +49,26 @@ export default function RepositoryDetails() {
               style={styles.headerImage}
               accessibilityLabel={`Avatar of ${userRepositories[0].owner.login}`}
             />
-            <Text style={styles.headerText} accessibilityRole="header">
+            <Text
+              style={[styles.headerText, { color: colors.onBackground }]}
+              accessibilityRole="header"
+            >
               {userRepositories[0].owner.login}
             </Text>
           </View>
 
+          <SortFilterBar
+            sort={sort}
+            onSortChange={setSort}
+            languageFilter={languageFilter}
+            onLanguageChange={setLanguageFilter}
+            availableLanguages={availableLanguages}
+            totalCount={userRepositories.length}
+            filteredCount={filteredAndSorted.length}
+          />
+
           <RepositoriesList
-            userRepositories={userRepositories}
+            userRepositories={filteredAndSorted}
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
@@ -55,7 +81,6 @@ export default function RepositoryDetails() {
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: MD3DarkTheme.colors.backdrop,
     alignSelf: "stretch",
     flex: 1,
   },
@@ -68,13 +93,11 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   headerContent: {
-    display: "flex",
     alignItems: "flex-start",
     padding: 20,
     flexDirection: "row",
   },
   headerText: {
-    color: MD3DarkTheme.colors.onBackground,
     fontSize: 32,
   },
 });

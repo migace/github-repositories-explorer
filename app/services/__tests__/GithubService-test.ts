@@ -116,4 +116,50 @@ describe("GithubService", () => {
       ).rejects.toThrow("Error fetching data: 500 Internal Server Error");
     });
   });
+
+  describe("getRepositoryByName", () => {
+    it("fetches a repository with the correct URL", async () => {
+      const mockResponse = { id: 1, name: "my-repo", full_name: "octocat/my-repo" };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const result = await githubService.getRepositoryByName("octocat", "my-repo");
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `${mockBaseUrl}/repos/octocat/my-repo`,
+        { headers: {} }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("throws an error when the repository is not found", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      await expect(
+        githubService.getRepositoryByName("octocat", "nonexistent")
+      ).rejects.toThrow("Error fetching data: 404 Not Found");
+    });
+
+    it("includes auth header when token is provided", async () => {
+      const serviceWithToken = new GithubService(mockBaseUrl, "my-token");
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 1, name: "repo" }),
+      });
+
+      await serviceWithToken.getRepositoryByName("octocat", "repo");
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `${mockBaseUrl}/repos/octocat/repo`,
+        { headers: { Authorization: "Bearer my-token" } }
+      );
+    });
+  });
 });

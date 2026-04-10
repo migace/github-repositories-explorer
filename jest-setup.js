@@ -17,3 +17,12 @@ jest.mock("expo-font", () => ({
   loadAsync: jest.fn(() => Promise.resolve()),
   isLoaded: jest.fn(() => true),
 }));
+
+jest.mock("expo-router", () => ({
+  Link: ({ children }) => children,
+  useLocalSearchParams: jest.fn(() => ({})),
+  useRouter: jest.fn(() => ({ push: jest.fn(), back: jest.fn() })),
+  Stack: {
+    Screen: jest.fn(() => null),
+  },
+}));

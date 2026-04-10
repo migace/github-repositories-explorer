@@ -1,11 +1,13 @@
 import { memo, useCallback } from "react";
 import { StyleSheet, View } from "react-native";
-import { List, MD3DarkTheme, Text } from "react-native-paper";
+import { List, Text, useTheme } from "react-native-paper";
+import { Link } from "expo-router";
 
 interface RepositoryItemProps {
   name: string;
   description: string;
   stargazers_count: number;
+  username: string;
 }
 
 const StarCount = ({ count }: { count: number }) => (
@@ -16,20 +18,30 @@ const StarCount = ({ count }: { count: number }) => (
 );
 
 export const RepositoryItem = memo(
-  ({ name, description, stargazers_count }: RepositoryItemProps) => {
+  ({ name, description, stargazers_count, username }: RepositoryItemProps) => {
+    const { colors } = useTheme();
+
     const renderRight = useCallback(
       () => <StarCount count={stargazers_count} />,
       [stargazers_count],
     );
 
     return (
-      <List.Item
-        testID="repository-item"
-        style={styles.listItem}
-        title={name}
-        description={description}
-        right={renderRight}
-      />
+      <Link
+        href={{
+          pathname: "/repo-details",
+          params: { username, repo: name },
+        }}
+        asChild
+      >
+        <List.Item
+          testID="repository-item"
+          style={StyleSheet.flatten([styles.listItem, { backgroundColor: colors.background }])}
+          title={name}
+          description={description}
+          right={renderRight}
+        />
+      </Link>
     );
   },
 );
@@ -40,7 +52,6 @@ const styles = StyleSheet.create({
   listItem: {
     padding: 20,
     marginBottom: 10,
-    backgroundColor: MD3DarkTheme.colors.background,
   },
   rightIconWrapper: {
     flexDirection: "row",

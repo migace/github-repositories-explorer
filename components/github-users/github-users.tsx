@@ -1,41 +1,57 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { IGithubUserDto } from "@/app/types/dto";
 import { blurhash } from "@/constants/blurHash";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { StyleSheet } from "react-native";
-import { List, MD3DarkTheme } from "react-native-paper";
+import { List, useTheme } from "react-native-paper";
 
 interface IGithubUsersProps {
   users: Pick<IGithubUserDto, "id" | "login" | "avatar_url">[];
 }
 
+type UserItem = Pick<IGithubUserDto, "id" | "login" | "avatar_url">;
+
+const UserAvatar = ({ uri }: { uri: string }) => (
+  <Image
+    source={uri}
+    contentFit="cover"
+    transition={1000}
+    style={styles.listItemImage}
+    placeholder={{ blurhash }}
+  />
+);
+
+const ChevronRight = () => <List.Icon icon="chevron-right" />;
+
+const UserListItem = memo(({ user }: { user: UserItem }) => {
+  const { colors } = useTheme();
+  const renderLeft = useCallback(() => <UserAvatar uri={user.avatar_url} />, [user.avatar_url]);
+
+  return (
+    <Link
+      href={{
+        pathname: "/repository-details",
+        params: { username: user.login },
+      }}
+      asChild
+    >
+      <List.Item
+        style={StyleSheet.flatten([styles.listItem, { backgroundColor: colors.surface }])}
+        title={user.login}
+        left={renderLeft}
+        right={ChevronRight}
+      />
+    </Link>
+  );
+});
+
+UserListItem.displayName = "UserListItem";
+
 export const GithubUsers = memo(({ users }: IGithubUsersProps) => (
   <List.Section>
     {users.map((user) => (
-      <Link
-        href={{
-          pathname: "/repository-details",
-          params: { username: user.login },
-        }}
-        key={user.id}
-        asChild
-      >
-        <List.Item
-          style={styles.listItem}
-          title={user.login}
-          left={() => (
-            <Image
-              source={user.avatar_url}
-              contentFit="cover"
-              transition={1000}
-              style={styles.listItemImage}
-              placeholder={{ blurhash }}
-            />
-          )}
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-      </Link>
+      <UserListItem key={user.id} user={user} />
     ))}
   </List.Section>
 ));
@@ -46,7 +62,6 @@ const styles = StyleSheet.create({
   listItem: {
     padding: 20,
     marginBottom: 10,
-    backgroundColor: MD3DarkTheme.colors.background,
   },
   listItemImage: {
     height: 24,

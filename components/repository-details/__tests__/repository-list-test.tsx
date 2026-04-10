@@ -10,12 +10,14 @@ const defaultProps = {
   fetchNextPage: noop,
 };
 
-describe("RepositoriesList", () => {
-  const mockRepositories = [
-    { id: 1, name: "repo1", description: "First repository", stargazers_count: 10 },
-    { id: 2, name: "repo2", description: "Second repository", stargazers_count: 5 },
-  ];
+const owner = { login: "octocat", avatar_url: "https://github.com/octocat.png" };
 
+const mockRepositories = [
+  { id: 1, name: "repo1", description: "First repository", stargazers_count: 10, language: "TypeScript", updated_at: "2024-01-01T00:00:00Z", owner },
+  { id: 2, name: "repo2", description: "Second repository", stargazers_count: 5, language: "JavaScript", updated_at: "2024-01-02T00:00:00Z", owner },
+];
+
+describe("RepositoriesList", () => {
   it("renders repository items when data is provided", () => {
     const { getByText } = render(
       <RepositoriesList {...defaultProps} userRepositories={mockRepositories} />,
