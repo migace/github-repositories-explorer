@@ -7,10 +7,16 @@ import { RepositoriesList } from "@/components/repository-details/repositories-l
 import { useUserRepositories } from "@/components/repository-details/hooks/use-user-repositories";
 
 export default function RepositoryDetails() {
-  const { userRepositories, isUserRepositoryFetching, isUserRepositoryError } =
-    useUserRepositories();
+  const {
+    userRepositories,
+    isUserRepositoryFetching,
+    isUserRepositoryError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useUserRepositories();
 
-  if (isUserRepositoryFetching) {
+  if (isUserRepositoryFetching && userRepositories.length === 0) {
     return <LoadingState />;
   }
 
@@ -35,7 +41,12 @@ export default function RepositoryDetails() {
             </Text>
           </View>
 
-          <RepositoriesList userRepositories={userRepositories} />
+          <RepositoriesList
+            userRepositories={userRepositories}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+          />
         </View>
       )}
     </View>

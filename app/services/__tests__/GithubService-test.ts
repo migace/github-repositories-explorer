@@ -98,7 +98,7 @@ describe("GithubService", () => {
       const result = await githubService.getRepositoriesByUsername(username);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        `${mockBaseUrl}/users/${username}/repos`,
+        `${mockBaseUrl}/users/${username}/repos?per_page=30&page=1`,
         { headers: {} }
       );
       expect(result).toEqual(mockResponse);

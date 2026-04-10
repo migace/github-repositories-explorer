@@ -8,11 +8,23 @@ import { expo } from "../app.json";
 import { MD3DarkTheme, PaperProvider } from "react-native-paper";
 import { Stack } from "expo-router";
 import { AppRegistry } from "react-native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  },
+});
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -31,7 +43,10 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}
+    >
       <PaperProvider theme={MD3DarkTheme}>
         <Stack>
           <Stack.Screen
@@ -45,7 +60,7 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="auto" />
       </PaperProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 

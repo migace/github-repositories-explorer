@@ -38,9 +38,11 @@ export class GithubService {
 
   async getRepositoriesByUsername(
     username: string,
+    page = 1,
+    perPage = 30,
   ): Promise<IGithubRepositoryDto[]> {
     return this.fetchJson<IGithubRepositoryDto[]>(
-      `${this.baseUrl}/users/${username}/repos`,
+      `${this.baseUrl}/users/${username}/repos?per_page=${perPage}&page=${page}`,
     );
   }
 }

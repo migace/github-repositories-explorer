@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { githubService } from "@/app/services/GithubService";
 import { useUserRepositories } from "../use-user-repositories";
 
 jest.mock("@tanstack/react-query", () => ({
-  useQuery: jest.fn(),
+  useInfiniteQuery: jest.fn(),
 }));
 jest.mock("expo-router", () => ({
   useLocalSearchParams: jest.fn(),
@@ -16,28 +16,29 @@ jest.mock("@/app/services/GithubService", () => ({
   },
 }));
 
+const mockPage = [
+  { id: 1, name: "repo1" },
+  { id: 2, name: "repo2" },
+];
+
 describe("useUserRepositories", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("should fetch user repositories when username is provided", async () => {
-    const mockRepositories = [
-      { id: 1, name: "repo1" },
-      { id: 2, name: "repo2" },
-    ];
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
 
-    (useLocalSearchParams as jest.Mock).mockReturnValue({
-      username: "testUser",
-    });
-
-    (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
-      queryFn();
+    (useInfiniteQuery as jest.Mock).mockImplementation(({ queryFn }) => {
+      queryFn({ pageParam: 1 });
       return {
-        data: mockRepositories,
+        data: { pages: [mockPage] },
         isFetching: false,
         isError: false,
         error: null,
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       };
     });
 
@@ -47,21 +48,26 @@ describe("useUserRepositories", () => {
       expect(result.current.userRepositories.length).toBeGreaterThan(0);
     });
 
-    expect(result.current.userRepositories).toEqual(mockRepositories);
+    expect(result.current.userRepositories).toEqual(mockPage);
     expect(result.current.isUserRepositoryFetching).toBe(false);
     expect(githubService.getRepositoriesByUsername).toHaveBeenCalledWith(
-      "testUser"
+      "testUser",
+      1,
+      30,
     );
   });
 
   it("should not fetch repositories if username is missing", () => {
     (useLocalSearchParams as jest.Mock).mockReturnValue({});
 
-    (useQuery as jest.Mock).mockReturnValue({
-      data: [],
+    (useInfiniteQuery as jest.Mock).mockReturnValue({
+      data: undefined,
       isFetching: false,
       isError: false,
       error: null,
+      fetchNextPage: jest.fn(),
+      hasNextPage: false,
+      isFetchingNextPage: false,
     });
 
     const { result } = renderHook(() => useUserRepositories());
@@ -72,15 +78,16 @@ describe("useUserRepositories", () => {
   });
 
   it("should handle loading state correctly", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({
-      username: "testUser",
-    });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
 
-    (useQuery as jest.Mock).mockReturnValue({
-      data: [],
+    (useInfiniteQuery as jest.Mock).mockReturnValue({
+      data: undefined,
       isFetching: true,
       isError: false,
       error: null,
+      fetchNextPage: jest.fn(),
+      hasNextPage: false,
+      isFetchingNextPage: false,
     });
 
     const { result } = renderHook(() => useUserRepositories());
@@ -90,21 +97,42 @@ describe("useUserRepositories", () => {
   });
 
   it("should expose error state when fetch fails", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({
-      username: "testUser",
-    });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
 
     const mockError = new Error("Network error");
-    (useQuery as jest.Mock).mockReturnValue({
-      data: [],
+    (useInfiniteQuery as jest.Mock).mockReturnValue({
+      data: undefined,
       isFetching: false,
       isError: true,
       error: mockError,
+      fetchNextPage: jest.fn(),
+      hasNextPage: false,
+      isFetchingNextPage: false,
     });
 
     const { result } = renderHook(() => useUserRepositories());
 
     expect(result.current.isUserRepositoryError).toBe(true);
     expect(result.current.userRepositoryError).toBe(mockError);
+  });
+
+  it("should expose pagination controls", () => {
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
+
+    const mockFetchNextPage = jest.fn();
+    (useInfiniteQuery as jest.Mock).mockReturnValue({
+      data: { pages: [mockPage] },
+      isFetching: false,
+      isError: false,
+      error: null,
+      fetchNextPage: mockFetchNextPage,
+      hasNextPage: true,
+      isFetchingNextPage: false,
+    });
+
+    const { result } = renderHook(() => useUserRepositories());
+
+    expect(result.current.hasNextPage).toBe(true);
+    expect(result.current.fetchNextPage).toBe(mockFetchNextPage);
   });
 });

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { IGithubUserDto } from "@/app/types/dto";
 import { blurhash } from "@/constants/blurHash";
 import { Image } from "expo-image";
@@ -9,15 +10,13 @@ interface IGithubUsersProps {
   users: Pick<IGithubUserDto, "id" | "login" | "avatar_url">[];
 }
 
-export const GithubUsers = ({ users }: IGithubUsersProps) => (
+export const GithubUsers = memo(({ users }: IGithubUsersProps) => (
   <List.Section>
     {users.map((user) => (
       <Link
         href={{
           pathname: "/repository-details",
-          params: {
-            username: user.login,
-          },
+          params: { username: user.login },
         }}
         key={user.id}
         asChild
@@ -39,7 +38,9 @@ export const GithubUsers = ({ users }: IGithubUsersProps) => (
       </Link>
     ))}
   </List.Section>
-);
+));
+
+GithubUsers.displayName = "GithubUsers";
 
 const styles = StyleSheet.create({
   listItem: {

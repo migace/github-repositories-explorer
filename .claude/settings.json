@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo:*)",
+      "Bash(npx expo-doctor@latest --verbose)",
+      "Bash(npx jest:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
