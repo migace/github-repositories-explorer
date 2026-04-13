@@ -2,6 +2,8 @@
 
 A React Native mobile application for searching GitHub users and exploring their repositories. Built with Expo, TypeScript, and Material Design 3.
 
+![github-explorer-demo](https://github.com/user-attachments/assets/7a5d4eb5-e489-4b4a-86e6-946f0770c148)
+
 ## Features
 
 - **User Search** - Search GitHub users with debounced input and search history
