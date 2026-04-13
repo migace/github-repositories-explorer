@@ -78,7 +78,6 @@ export const GithubUsers = memo(({ users }: GithubUsersProps) => (
     renderItem={({ item }) => <UserListItem user={item} />}
     contentContainerStyle={styles.list}
     showsVerticalScrollIndicator={false}
-    estimatedItemSize={72}
   />
 ));
 

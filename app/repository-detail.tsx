@@ -24,7 +24,7 @@ const StatCard = ({
       card: [
         styles.statCard,
         { backgroundColor: colors.surfaceVariant, borderColor: colors.outline },
-      ] as const,
+      ],
       value: { color: colors.onSurface, fontWeight: "700" } as const,
       label: { color: colors.onSurfaceVariant } as const,
     }),

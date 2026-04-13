@@ -60,7 +60,6 @@ export const RepositoriesList = memo(
         contentContainerStyle={styles.wrapper}
         accessible
         accessibilityLabel="List of user repositories"
-        estimatedItemSize={90}
       />
     );
   },
