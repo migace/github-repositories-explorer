@@ -11,11 +11,12 @@ export const ErrorState = ({
 }: ErrorStateProps) => {
   const { colors } = useTheme();
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityRole="alert">
       <MaterialCommunityIcons
         name="alert-circle-outline"
         size={48}
         color={colors.error}
+        accessibilityElementsHidden
       />
       <Text
         variant="bodyLarge"

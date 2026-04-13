@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Chip, IconButton, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Chip,
+  IconButton,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 
 interface SearchUsersProps {
   isGithubProfilesLoading: boolean;
@@ -46,6 +52,7 @@ export const SearchUsers = ({
               <TextInput.Icon
                 icon="close-circle"
                 onPress={() => setGithubProfile("")}
+                accessibilityLabel="Clear search input"
               />
             ) : undefined
           }
@@ -59,6 +66,8 @@ export const SearchUsers = ({
           disabled={isGithubProfilesLoading || !githubProfile.trim()}
           style={styles.searchButton}
           animated
+          accessibilityLabel="Search"
+          accessibilityHint="Searches for GitHub users matching your query"
         />
       </View>
 
@@ -85,9 +94,13 @@ export const SearchUsers = ({
                 key={term}
                 compact
                 onPress={() => handleHistorySelect(term)}
-                style={[styles.chip, { backgroundColor: colors.surfaceVariant }]}
+                style={[
+                  styles.chip,
+                  { backgroundColor: colors.surfaceVariant },
+                ]}
                 textStyle={{ color: colors.onSurfaceVariant }}
                 icon="history"
+                accessibilityHint={`Search for ${term}`}
               >
                 {term}
               </Chip>

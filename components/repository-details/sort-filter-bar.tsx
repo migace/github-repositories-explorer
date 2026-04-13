@@ -51,6 +51,8 @@ export const SortFilterBar = memo(
                 selected={true}
                 style={styles.chip}
                 compact
+                accessibilityLabel={`Sort by: ${SORT_LABELS[sort]}`}
+                accessibilityHint="Opens sort options menu"
               >
                 {SORT_LABELS[sort]}
               </Chip>
@@ -77,6 +79,8 @@ export const SortFilterBar = memo(
             selected={languageFilter === null}
             style={styles.chip}
             compact
+            accessibilityLabel="All languages"
+            accessibilityHint="Removes language filter"
           >
             All
           </Chip>
@@ -90,6 +94,8 @@ export const SortFilterBar = memo(
               selected={languageFilter === lang}
               style={styles.chip}
               compact
+              accessibilityLabel={`${lang}${languageFilter === lang ? ", selected" : ""}`}
+              accessibilityHint={`Filter repositories by ${lang}`}
             >
               {lang}
             </Chip>

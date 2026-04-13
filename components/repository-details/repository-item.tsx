@@ -35,12 +35,21 @@ const LANGUAGE_COLORS: Record<string, string> = {
 const LanguageDot = ({ language }: { language: string }) => {
   const color = LANGUAGE_COLORS[language] ?? "#8b949e";
   return (
-    <View style={[styles.langDot, { backgroundColor: color }]} />
+    <View
+      style={[styles.langDot, { backgroundColor: color }]}
+      accessibilityElementsHidden
+    />
   );
 };
 
 export const RepositoryItem = memo(
-  ({ name, description, stargazers_count, language, username }: RepositoryItemProps) => {
+  ({
+    name,
+    description,
+    stargazers_count,
+    language,
+    username,
+  }: RepositoryItemProps) => {
     const { colors } = useTheme();
 
     const dynamicStyles = useMemo(
@@ -63,6 +72,9 @@ export const RepositoryItem = memo(
       >
         <Pressable
           testID="repository-item"
+          accessibilityRole="button"
+          accessibilityLabel={`${name} repository`}
+          accessibilityHint="Opens repository details"
           style={({ pressed }) => [
             styles.card,
             dynamicStyles.card,
@@ -105,7 +117,11 @@ export const RepositoryItem = memo(
               </View>
             ) : null}
             <View style={styles.metaItem}>
-              <MaterialCommunityIcons name="star-outline" size={14} color={colors.onSurfaceVariant} />
+              <MaterialCommunityIcons
+                name="star-outline"
+                size={14}
+                color={colors.onSurfaceVariant}
+              />
               <Text variant="labelSmall" style={dynamicStyles.meta}>
                 {stargazers_count.toLocaleString()}
               </Text>

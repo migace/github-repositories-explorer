@@ -61,9 +61,18 @@ export default function HomeScreen() {
     }
     if (!username) {
       return (
-        <View style={styles.emptyState}>
-          <Text style={[styles.emptyIcon, dynamicStyles.emptyIcon]}>🔍</Text>
-          <Text variant="titleMedium" style={dynamicStyles.emptyTitle}>
+        <View style={styles.emptyState} accessibilityRole="summary">
+          <Text
+            style={[styles.emptyIcon, dynamicStyles.emptyIcon]}
+            accessibilityElementsHidden
+          >
+            🔍
+          </Text>
+          <Text
+            variant="titleMedium"
+            style={dynamicStyles.emptyTitle}
+            accessibilityRole="header"
+          >
             Search GitHub users
           </Text>
           <Text variant="bodyMedium" style={dynamicStyles.emptySubtitle}>

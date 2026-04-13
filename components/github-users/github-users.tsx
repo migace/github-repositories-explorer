@@ -38,6 +38,9 @@ const UserListItem = memo(({ user }: { user: UserItem }) => {
       asChild
     >
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${user.login}`}
+        accessibilityHint="Opens user repositories"
         style={({ pressed }) => [
           styles.card,
           dynamicStyles.card,

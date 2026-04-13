@@ -4,7 +4,11 @@ import { ActivityIndicator, useTheme } from "react-native-paper";
 export const LoadingState = () => {
   const { colors } = useTheme();
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessibilityRole="progressbar"
+      accessibilityLabel="Loading content"
+    >
       <ActivityIndicator size="large" color={colors.primary} />
     </View>
   );
