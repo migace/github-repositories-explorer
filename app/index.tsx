@@ -7,7 +7,7 @@ import { SearchUsers } from "@/components/github-users/search-users";
 import { useSearchHistory } from "@/components/github-users/hooks/use-search-history";
 import { ErrorState } from "@/components/error-state";
 import { useAppTheme } from "@/contexts/theme-context";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const HeaderRight = () => {
   const { isDark, toggleTheme } = useAppTheme();
@@ -27,6 +27,24 @@ export default function HomeScreen() {
   const { history, addToHistory, clearHistory } = useSearchHistory();
   const { colors } = useTheme();
 
+  const dynamicStyles = useMemo(
+    () => ({
+      wrapper: { flex: 1, backgroundColor: colors.background } as const,
+      searchWrapper: {
+        backgroundColor: colors.surface,
+        borderBottomColor: colors.outline,
+      } as const,
+      emptyIcon: { color: colors.onSurfaceVariant } as const,
+      emptyTitle: { color: colors.onBackground, textAlign: "center" } as const,
+      emptySubtitle: {
+        color: colors.onSurfaceVariant,
+        textAlign: "center",
+        marginTop: 4,
+      } as const,
+    }),
+    [colors],
+  );
+
   const handleSearch = (value: string) => {
     setUsername(value);
     addToHistory(value);
@@ -44,23 +62,11 @@ export default function HomeScreen() {
     if (!username) {
       return (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyIcon, { color: colors.onSurfaceVariant }]}>
-            🔍
-          </Text>
-          <Text
-            variant="titleMedium"
-            style={{ color: colors.onBackground, textAlign: "center" }}
-          >
+          <Text style={[styles.emptyIcon, dynamicStyles.emptyIcon]}>🔍</Text>
+          <Text variant="titleMedium" style={dynamicStyles.emptyTitle}>
             Search GitHub users
           </Text>
-          <Text
-            variant="bodyMedium"
-            style={{
-              color: colors.onSurfaceVariant,
-              textAlign: "center",
-              marginTop: 4,
-            }}
-          >
+          <Text variant="bodyMedium" style={dynamicStyles.emptySubtitle}>
             Enter a username to explore their repositories
           </Text>
         </View>
@@ -70,7 +76,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={dynamicStyles.wrapper}>
       <Stack.Screen
         options={{
           title: "GitHub Explorer",
@@ -82,15 +88,7 @@ export default function HomeScreen() {
         }}
       />
 
-      <View
-        style={[
-          styles.searchWrapper,
-          {
-            backgroundColor: colors.surface,
-            borderBottomColor: colors.outline,
-          },
-        ]}
-      >
+      <View style={[styles.searchWrapper, dynamicStyles.searchWrapper]}>
         <SearchUsers
           isGithubProfilesLoading={isGithubProfilesLoading}
           onClick={handleSearch}

@@ -1,5 +1,5 @@
-import { IGithubRepositoryDto, IGithubUserDto } from "../types/dto";
-import { IGithubUsersResponse } from "../types/github";
+import { GithubRepositoryDto, GithubUserDto } from "@/types/dto";
+import { GithubUsersResponse } from "@/types/github";
 
 export class GithubService {
   private readonly baseUrl: string;
@@ -29,9 +29,9 @@ export class GithubService {
     return response.json();
   }
 
-  async getUserProfile(username: string): Promise<IGithubUserDto[]> {
-    const data = await this.fetchJson<IGithubUsersResponse>(
-      `${this.baseUrl}/search/users?q=${username}&per_page=5`,
+  async getUserProfile(username: string): Promise<GithubUserDto[]> {
+    const data = await this.fetchJson<GithubUsersResponse>(
+      `${this.baseUrl}/search/users?q=${encodeURIComponent(username)}&per_page=5`,
     );
     return data?.items || [];
   }
@@ -40,18 +40,18 @@ export class GithubService {
     username: string,
     page = 1,
     perPage = 30,
-  ): Promise<IGithubRepositoryDto[]> {
-    return this.fetchJson<IGithubRepositoryDto[]>(
-      `${this.baseUrl}/users/${username}/repos?per_page=${perPage}&page=${page}`,
+  ): Promise<GithubRepositoryDto[]> {
+    return this.fetchJson<GithubRepositoryDto[]>(
+      `${this.baseUrl}/users/${encodeURIComponent(username)}/repos?per_page=${perPage}&page=${page}`,
     );
   }
 
   async getRepositoryByName(
     owner: string,
     repo: string,
-  ): Promise<IGithubRepositoryDto> {
-    return this.fetchJson<IGithubRepositoryDto>(
-      `${this.baseUrl}/repos/${owner}/${repo}`,
+  ): Promise<GithubRepositoryDto> {
+    return this.fetchJson<GithubRepositoryDto>(
+      `${this.baseUrl}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
     );
   }
 }

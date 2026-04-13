@@ -2,13 +2,13 @@ import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-interface IErrorStateProps {
+interface ErrorStateProps {
   message?: string;
 }
 
 export const ErrorState = ({
   message = "Something went wrong. Please try again.",
-}: IErrorStateProps) => {
+}: ErrorStateProps) => {
   const { colors } = useTheme();
   return (
     <View style={styles.container}>

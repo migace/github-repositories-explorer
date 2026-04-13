@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { IGithubRepositoryDto } from "@/app/types/dto";
+import type { GithubRepositoryDto } from "@/types/dto";
 
 export type SortOption =
   | "stars_desc"
@@ -9,10 +9,10 @@ export type SortOption =
   | "updated_desc";
 
 type Repo = Pick<
-  IGithubRepositoryDto,
+  GithubRepositoryDto,
   "id" | "name" | "description" | "stargazers_count" | "language" | "updated_at"
 > & {
-  owner: Pick<IGithubRepositoryDto["owner"], "login" | "avatar_url">;
+  owner: Pick<GithubRepositoryDto["owner"], "login" | "avatar_url">;
 };
 
 export const SORT_LABELS: Record<SortOption, string> = {
@@ -49,7 +49,7 @@ export const useSortFilter = (repos: Repo[]) => {
   const availableLanguages = useMemo(
     () =>
       Array.from(
-        new Set(repos.map((r) => r.language).filter(Boolean) as string[]),
+        new Set(repos.map((r) => r.language).filter((lang): lang is string => Boolean(lang))),
       ).sort((a, b) => a.localeCompare(b)),
     [repos],
   );

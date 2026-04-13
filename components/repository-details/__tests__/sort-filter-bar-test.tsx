@@ -62,7 +62,7 @@ describe("SortFilterBar", () => {
       />,
     );
 
-    expect(getByText("3 / 10 repos")).toBeTruthy();
+    expect(getByText("Showing 3 of 10 repos")).toBeTruthy();
   });
 
   it("calls onLanguageChange with null when All chip is pressed", () => {

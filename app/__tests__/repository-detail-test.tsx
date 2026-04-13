@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import RepoDetails from "../repo-details";
+import RepoDetails from "../repository-detail";
 
 jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),

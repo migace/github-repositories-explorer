@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
@@ -29,6 +30,19 @@ export default function RepositoryDetails() {
 
   const { colors } = useTheme();
 
+  const dynamicStyles = useMemo(
+    () => ({
+      wrapper: { backgroundColor: colors.background },
+      profileHeader: {
+        backgroundColor: colors.surface,
+        borderBottomColor: colors.outline,
+      },
+      name: { color: colors.onSurface, fontWeight: "700" } as const,
+      repoCount: { color: colors.onSurfaceVariant },
+    }),
+    [colors],
+  );
+
   if (isUserRepositoryFetching && userRepositories.length === 0) {
     return <LoadingState />;
   }
@@ -46,26 +60,18 @@ export default function RepositoryDetails() {
   const owner = userRepositories[0].owner;
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
-      <View
-        style={[
-          styles.profileHeader,
-          { backgroundColor: colors.surface, borderBottomColor: colors.outline },
-        ]}
-      >
+    <View style={[styles.wrapper, dynamicStyles.wrapper]}>
+      <View style={[styles.profileHeader, dynamicStyles.profileHeader]}>
         <Image
           source={owner.avatar_url}
           style={styles.avatar}
           accessibilityLabel={`Avatar of ${owner.login}`}
         />
         <View style={styles.profileInfo}>
-          <Text
-            variant="titleLarge"
-            style={{ color: colors.onSurface, fontWeight: "700" }}
-          >
+          <Text variant="titleLarge" style={dynamicStyles.name}>
             {owner.login}
           </Text>
-          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+          <Text variant="bodySmall" style={dynamicStyles.repoCount}>
             {userRepositories.length} repositories
           </Text>
         </View>

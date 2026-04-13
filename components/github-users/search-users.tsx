@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, IconButton, Text, TextInput, useTheme } from "react-native-paper";
 
-interface ISearchUsersProps {
+interface SearchUsersProps {
   isGithubProfilesLoading: boolean;
   onClick: (username: string) => void;
   history: string[];
@@ -16,7 +16,7 @@ export const SearchUsers = ({
   history,
   onHistorySelect,
   onHistoryClear,
-}: ISearchUsersProps) => {
+}: SearchUsersProps) => {
   const [githubProfile, setGithubProfile] = useState("");
   const { colors } = useTheme();
 

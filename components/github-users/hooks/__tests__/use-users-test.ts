@@ -29,6 +29,6 @@ describe("useUsers hook", () => {
 
     expect(result.current.githubUsers).toEqual([]);
     expect(result.current.isGithubProfilesLoading).toBe(false);
-    expect(typeof result.current.fetchUsers).toBe("function");
+    expect(result.current.isGithubProfilesError).toBe(false);
   });
 });

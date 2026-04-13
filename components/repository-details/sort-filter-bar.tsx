@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Chip, Menu, Text, useTheme } from "react-native-paper";
 import { type SortOption, SORT_LABELS } from "./hooks/use-sort-filter";
 
-interface ISortFilterBarProps {
+interface SortFilterBarProps {
   sort: SortOption;
   onSortChange: (sort: SortOption) => void;
   languageFilter: string | null;
@@ -22,7 +22,7 @@ export const SortFilterBar = memo(
     availableLanguages,
     totalCount,
     filteredCount,
-  }: ISortFilterBarProps) => {
+  }: SortFilterBarProps) => {
     const { colors } = useTheme();
     const [sortMenuVisible, setSortMenuVisible] = useState(false);
 

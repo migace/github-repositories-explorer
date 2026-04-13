@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
@@ -87,13 +88,13 @@ const githubLightTheme: MD3Theme = {
   },
 };
 
-interface IThemeContext {
+interface ThemeContextValue {
   theme: MD3Theme;
   isDark: boolean;
   toggleTheme: () => void;
 }
 
-export const ThemeContext = createContext<IThemeContext>({
+export const ThemeContext = createContext<ThemeContextValue>({
   theme: githubDarkTheme,
   isDark: true,
   toggleTheme: () => {},
@@ -120,16 +121,17 @@ export const ThemeProvider = ({
     });
   }, []);
 
+  const value = useMemo(
+    () => ({
+      theme: isDark ? githubDarkTheme : githubLightTheme,
+      isDark,
+      toggleTheme,
+    }),
+    [isDark, toggleTheme],
+  );
+
   return (
-    <ThemeContext.Provider
-      value={{
-        theme: isDark ? githubDarkTheme : githubLightTheme,
-        isDark,
-        toggleTheme,
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 

@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { memo, useMemo } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { Link } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -43,21 +43,31 @@ export const RepositoryItem = memo(
   ({ name, description, stargazers_count, language, username }: RepositoryItemProps) => {
     const { colors } = useTheme();
 
+    const dynamicStyles = useMemo(
+      () => ({
+        card: { backgroundColor: colors.surface, borderColor: colors.outline },
+        name: { color: colors.primary },
+        description: { color: colors.onSurfaceVariant },
+        meta: { color: colors.onSurfaceVariant },
+      }),
+      [colors],
+    );
+
     return (
       <Link
         href={{
-          pathname: "/repo-details",
+          pathname: "/repository-detail",
           params: { username, repo: name },
         }}
         asChild
       >
-        <TouchableOpacity
+        <Pressable
           testID="repository-item"
-          style={StyleSheet.flatten([
+          style={({ pressed }) => [
             styles.card,
-            { backgroundColor: colors.surface, borderColor: colors.outline },
-          ])}
-          activeOpacity={0.7}
+            dynamicStyles.card,
+            pressed && styles.pressed,
+          ]}
         >
           <View style={styles.top}>
             <MaterialCommunityIcons
@@ -68,7 +78,7 @@ export const RepositoryItem = memo(
             />
             <Text
               variant="titleSmall"
-              style={[styles.name, { color: colors.primary }]}
+              style={[styles.name, dynamicStyles.name]}
               numberOfLines={1}
             >
               {name}
@@ -78,7 +88,7 @@ export const RepositoryItem = memo(
           {description ? (
             <Text
               variant="bodySmall"
-              style={[styles.description, { color: colors.onSurfaceVariant }]}
+              style={[styles.description, dynamicStyles.description]}
               numberOfLines={2}
             >
               {description}
@@ -89,25 +99,19 @@ export const RepositoryItem = memo(
             {language ? (
               <View style={styles.metaItem}>
                 <LanguageDot language={language} />
-                <Text
-                  variant="labelSmall"
-                  style={{ color: colors.onSurfaceVariant }}
-                >
+                <Text variant="labelSmall" style={dynamicStyles.meta}>
                   {language}
                 </Text>
               </View>
             ) : null}
             <View style={styles.metaItem}>
               <MaterialCommunityIcons name="star-outline" size={14} color={colors.onSurfaceVariant} />
-              <Text
-                variant="labelSmall"
-                style={{ color: colors.onSurfaceVariant }}
-              >
+              <Text variant="labelSmall" style={dynamicStyles.meta}>
                 {stargazers_count.toLocaleString()}
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Link>
     );
   },
@@ -121,6 +125,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
     gap: 6,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   top: {
     flexDirection: "row",

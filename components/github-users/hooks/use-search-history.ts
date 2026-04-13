@@ -13,18 +13,17 @@ export const useSearchHistory = () => {
     });
   }, []);
 
-  const addToHistory = useCallback(
-    async (term: string) => {
-      if (!term.trim()) return;
-      const updated = [term, ...history.filter((h) => h !== term)].slice(
+  const addToHistory = useCallback(async (term: string) => {
+    if (!term.trim()) return;
+    setHistory((prev) => {
+      const updated = [term, ...prev.filter((h) => h !== term)].slice(
         0,
         MAX_HISTORY,
       );
-      setHistory(updated);
-      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-    },
-    [history],
-  );
+      AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const clearHistory = useCallback(async () => {
     setHistory([]);

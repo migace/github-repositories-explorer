@@ -3,11 +3,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { expo } from "../app.json";
+
 
 import { PaperProvider } from "react-native-paper";
 import { Stack } from "expo-router";
-import { AppRegistry } from "react-native";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
@@ -18,6 +18,12 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: (failureCount, error) => {
+        const message = error instanceof Error ? error.message : "";
+        if (message.includes("403") || message.includes("429")) return false;
+        return failureCount < 3;
+      },
     },
   },
 });
@@ -47,20 +53,22 @@ function AppContent() {
 
   return (
     <PaperProvider theme={theme}>
-      <Stack>
-        <Stack.Screen
-          name="repository-details"
-          options={{ title: "Repository details" }}
-        />
-        <Stack.Screen
-          name="repo-details"
-          options={{ title: "Repository" }}
-        />
-        <Stack.Screen
-          name="+not-found"
-          options={{ title: "Page Not Found" }}
-        />
-      </Stack>
+      <ErrorBoundary>
+        <Stack>
+          <Stack.Screen
+            name="repository-details"
+            options={{ title: "Repository details" }}
+          />
+          <Stack.Screen
+            name="repository-detail"
+            options={{ title: "Repository" }}
+          />
+          <Stack.Screen
+            name="+not-found"
+            options={{ title: "Page Not Found" }}
+          />
+        </Stack>
+      </ErrorBoundary>
       <StatusBar style="auto" />
     </PaperProvider>
   );
@@ -79,4 +87,3 @@ export default function RootLayout() {
   );
 }
 
-AppRegistry.registerComponent(expo.name, () => RootLayout);

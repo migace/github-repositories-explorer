@@ -1,4 +1,4 @@
-export interface IGithubUserDto {
+export interface GithubUserDto {
   login: string;
   id: number;
   node_id: string;
@@ -21,7 +21,7 @@ export interface IGithubUserDto {
   score: number;
 }
 
-export interface IGithubRepositoryDto {
+export interface GithubRepositoryDto {
   id: number;
   node_id: string;
   name: string;

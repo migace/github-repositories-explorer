@@ -2,14 +2,13 @@ import { githubService } from "@/app/services/GithubService";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 
-interface IRouteParams {
-  username: string;
-}
-
 const PER_PAGE = 30;
 
 export const useUserRepositories = () => {
-  const { username } = useLocalSearchParams() as unknown as IRouteParams;
+  const params = useLocalSearchParams<{ username: string }>();
+  const username = Array.isArray(params.username)
+    ? params.username[0]
+    : params.username ?? "";
 
   const {
     data,

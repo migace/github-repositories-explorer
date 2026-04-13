@@ -18,6 +18,11 @@ jest.mock("expo-font", () => ({
   isLoaded: jest.fn(() => true),
 }));
 
+jest.mock("@shopify/flash-list", () => {
+  const { FlatList } = require("react-native");
+  return { FlashList: FlatList };
+});
+
 jest.mock("expo-router", () => ({
   Link: ({ children }) => children,
   useLocalSearchParams: jest.fn(() => ({})),

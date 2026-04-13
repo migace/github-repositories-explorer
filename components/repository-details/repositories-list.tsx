@@ -1,18 +1,19 @@
 import { memo } from "react";
-import { FlatList, StyleSheet, ActivityIndicator, View } from "react-native";
+import { StyleSheet, ActivityIndicator, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { List, useTheme } from "react-native-paper";
 import { RepositoryItem } from "./repository-item";
-import type { IGithubRepositoryDto } from "@/app/types/dto";
+import type { GithubRepositoryDto } from "@/types/dto";
 import type { FetchNextPageOptions } from "@tanstack/react-query";
 
 type RepoListItem = Pick<
-  IGithubRepositoryDto,
+  GithubRepositoryDto,
   "id" | "name" | "description" | "stargazers_count" | "language" | "updated_at"
 > & {
-  owner: Pick<IGithubRepositoryDto["owner"], "login" | "avatar_url">;
+  owner: Pick<GithubRepositoryDto["owner"], "login" | "avatar_url">;
 };
 
-interface IRepositoriesListProps {
+interface RepositoriesListProps {
   userRepositories: RepoListItem[];
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
@@ -27,11 +28,11 @@ export const RepositoriesList = memo(
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  }: IRepositoriesListProps) => {
+  }: RepositoriesListProps) => {
     const { colors } = useTheme();
 
     return (
-      <FlatList
+      <FlashList
         data={userRepositories}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -59,6 +60,7 @@ export const RepositoriesList = memo(
         contentContainerStyle={styles.wrapper}
         accessible
         accessibilityLabel="List of user repositories"
+        estimatedItemSize={90}
       />
     );
   },
