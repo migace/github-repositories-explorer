@@ -1,13 +1,15 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface ErrorStateProps {
   message?: string;
+  onRetry?: () => void;
 }
 
 export const ErrorState = ({
   message = "Something went wrong. Please try again.",
+  onRetry,
 }: ErrorStateProps) => {
   const { colors } = useTheme();
   return (
@@ -24,6 +26,23 @@ export const ErrorState = ({
       >
         {message}
       </Text>
+      {onRetry ? (
+        <Pressable
+          onPress={onRetry}
+          style={[styles.retryButton, { borderColor: colors.outline }]}
+          accessibilityRole="button"
+          accessibilityLabel="Try again"
+        >
+          <MaterialCommunityIcons
+            name="refresh"
+            size={18}
+            color={colors.primary}
+          />
+          <Text variant="labelLarge" style={{ color: colors.primary }}>
+            Try again
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 };
@@ -39,5 +58,15 @@ const styles = StyleSheet.create({
   message: {
     textAlign: "center",
     lineHeight: 22,
+  },
+  retryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: 8,
   },
 });

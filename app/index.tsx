@@ -100,9 +100,8 @@ export default function HomeScreen() {
       <View style={[styles.searchWrapper, dynamicStyles.searchWrapper]}>
         <SearchUsers
           isGithubProfilesLoading={isGithubProfilesLoading}
-          onClick={handleSearch}
+          onSearch={handleSearch}
           history={history}
-          onHistorySelect={handleSearch}
           onHistoryClear={clearHistory}
         />
       </View>

@@ -10,30 +10,27 @@ import {
 
 interface SearchUsersProps {
   isGithubProfilesLoading: boolean;
-  onClick: (username: string) => void;
+  onSearch: (username: string) => void;
   history: string[];
-  onHistorySelect: (term: string) => void;
   onHistoryClear: () => void;
 }
 
 export const SearchUsers = ({
   isGithubProfilesLoading,
-  onClick,
+  onSearch,
   history,
-  onHistorySelect,
   onHistoryClear,
 }: SearchUsersProps) => {
   const [githubProfile, setGithubProfile] = useState("");
   const { colors } = useTheme();
 
   const handleSearch = () => {
-    if (githubProfile.trim()) onClick(githubProfile.trim());
+    if (githubProfile.trim()) onSearch(githubProfile.trim());
   };
 
   const handleHistorySelect = (term: string) => {
     setGithubProfile(term);
-    onClick(term);
-    onHistorySelect(term);
+    onSearch(term);
   };
 
   return (

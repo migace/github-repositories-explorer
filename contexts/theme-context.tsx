@@ -91,25 +91,25 @@ const githubLightTheme: MD3Theme = {
 interface ThemeContextValue {
   theme: MD3Theme;
   isDark: boolean;
+  isThemeLoaded: boolean;
   toggleTheme: () => void;
 }
 
 export const ThemeContext = createContext<ThemeContextValue>({
   theme: githubDarkTheme,
   isDark: true,
+  isThemeLoaded: false,
   toggleTheme: () => {},
 });
 
-export const ThemeProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [isDark, setIsDark] = useState(true);
+  const [isThemeLoaded, setIsThemeLoaded] = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem(THEME_KEY).then((stored) => {
       if (stored !== null) setIsDark(stored === "dark");
+      setIsThemeLoaded(true);
     });
   }, []);
 
@@ -125,9 +125,10 @@ export const ThemeProvider = ({
     () => ({
       theme: isDark ? githubDarkTheme : githubLightTheme,
       isDark,
+      isThemeLoaded,
       toggleTheme,
     }),
-    [isDark, toggleTheme],
+    [isDark, isThemeLoaded, toggleTheme],
   );
 
   return (

@@ -99,7 +99,7 @@ export interface GithubRepositoryDto {
   size: number;
   stargazers_count: number;
   watchers_count: number;
-  language: string;
+  language: string | null;
   has_issues: boolean;
   has_projects: boolean;
   has_downloads: boolean;
@@ -107,11 +107,17 @@ export interface GithubRepositoryDto {
   has_pages: boolean;
   has_discussions: boolean;
   forks_count: number;
-  mirror_url: null;
+  mirror_url: string | null;
   archived: boolean;
   disabled: boolean;
   open_issues_count: number;
-  license: null;
+  license: {
+    key: string;
+    name: string;
+    spdx_id: string;
+    url: string | null;
+    node_id: string;
+  } | null;
   allow_forking: boolean;
   is_template: boolean;
   web_commit_signoff_required: boolean;

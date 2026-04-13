@@ -54,7 +54,13 @@ export default function RepositoryDetails() {
   }
 
   if (userRepositories.length === 0) {
-    return null;
+    return (
+      <View style={[styles.emptyState, { backgroundColor: colors.background }]}>
+        <Text variant="bodyLarge" style={{ color: colors.onSurfaceVariant }}>
+          This user has no public repositories.
+        </Text>
+      </View>
+    );
   }
 
   const owner = userRepositories[0].owner;
@@ -115,5 +121,11 @@ const styles = StyleSheet.create({
   },
   profileInfo: {
     gap: 2,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
   },
 });

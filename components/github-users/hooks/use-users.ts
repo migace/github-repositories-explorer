@@ -13,7 +13,8 @@ export const useUsers = (username: string) => {
     isError: isGithubProfilesError,
   } = useQuery({
     queryKey: ["users", debouncedUsername],
-    queryFn: () => githubService.getUserProfile(debouncedUsername),
+    queryFn: ({ signal }) =>
+      githubService.getUserProfile(debouncedUsername, signal),
     enabled: !!debouncedUsername,
   });
 

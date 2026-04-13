@@ -17,8 +17,11 @@ export class GithubService {
     return this.token ? { Authorization: `Bearer ${this.token}` } : {};
   }
 
-  private async fetchJson<T>(url: string): Promise<T> {
-    const response = await fetch(url, { headers: this.authHeaders });
+  private async fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+    const response = await fetch(url, {
+      headers: this.authHeaders,
+      signal,
+    });
 
     if (!response.ok) {
       throw new Error(
@@ -29,9 +32,13 @@ export class GithubService {
     return response.json();
   }
 
-  async getUserProfile(username: string): Promise<GithubUserDto[]> {
+  async getUserProfile(
+    username: string,
+    signal?: AbortSignal,
+  ): Promise<GithubUserDto[]> {
     const data = await this.fetchJson<GithubUsersResponse>(
       `${this.baseUrl}/search/users?q=${encodeURIComponent(username)}&per_page=5`,
+      signal,
     );
     return data?.items || [];
   }
@@ -40,18 +47,22 @@ export class GithubService {
     username: string,
     page = 1,
     perPage = 30,
+    signal?: AbortSignal,
   ): Promise<GithubRepositoryDto[]> {
     return this.fetchJson<GithubRepositoryDto[]>(
       `${this.baseUrl}/users/${encodeURIComponent(username)}/repos?per_page=${perPage}&page=${page}`,
+      signal,
     );
   }
 
   async getRepositoryByName(
     owner: string,
     repo: string,
+    signal?: AbortSignal,
   ): Promise<GithubRepositoryDto> {
     return this.fetchJson<GithubRepositoryDto>(
       `${this.baseUrl}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+      signal,
     );
   }
 }

@@ -27,11 +27,18 @@ export class ErrorBoundary extends Component<
     console.error("ErrorBoundary caught:", error, errorInfo);
   }
 
+  resetError = () => {
+    this.setState({ hasError: false });
+  };
+
   render() {
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <ErrorState message="Something unexpected happened. Please restart the app." />
+          <ErrorState
+            message="Something unexpected happened."
+            onRetry={this.resetError}
+          />
         )
       );
     }

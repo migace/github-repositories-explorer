@@ -27,10 +27,13 @@ describe("useUserRepositories", () => {
   });
 
   it("should fetch user repositories when username is provided", async () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({
+      username: "testUser",
+    });
 
+    const controller = new AbortController();
     (useInfiniteQuery as jest.Mock).mockImplementation(({ queryFn }) => {
-      queryFn({ pageParam: 1 });
+      queryFn({ pageParam: 1, signal: controller.signal });
       return {
         data: { pages: [mockPage] },
         isFetching: false,
@@ -54,6 +57,7 @@ describe("useUserRepositories", () => {
       "testUser",
       1,
       30,
+      controller.signal,
     );
   });
 
@@ -78,7 +82,9 @@ describe("useUserRepositories", () => {
   });
 
   it("should handle loading state correctly", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({
+      username: "testUser",
+    });
 
     (useInfiniteQuery as jest.Mock).mockReturnValue({
       data: undefined,
@@ -97,7 +103,9 @@ describe("useUserRepositories", () => {
   });
 
   it("should expose error state when fetch fails", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({
+      username: "testUser",
+    });
 
     const mockError = new Error("Network error");
     (useInfiniteQuery as jest.Mock).mockReturnValue({
@@ -117,7 +125,9 @@ describe("useUserRepositories", () => {
   });
 
   it("should expose pagination controls", () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue({ username: "testUser" });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({
+      username: "testUser",
+    });
 
     const mockFetchNextPage = jest.fn();
     (useInfiniteQuery as jest.Mock).mockReturnValue({

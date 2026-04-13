@@ -81,14 +81,18 @@ describe("useUsers", () => {
   });
 
   it("should call githubService.getUserProfile via queryFn", () => {
+    const controller = new AbortController();
     (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
-      queryFn();
+      queryFn({ signal: controller.signal });
       return { data: mockUsers, isLoading: false, isError: false };
     });
 
     renderHook(() => useUsers("octocat"));
 
-    expect(githubService.getUserProfile).toHaveBeenCalledWith("octocat");
+    expect(githubService.getUserProfile).toHaveBeenCalledWith(
+      "octocat",
+      controller.signal,
+    );
   });
 
   it("should return users when query succeeds", () => {
@@ -138,7 +142,7 @@ describe("useUsers", () => {
     });
 
     const { rerender } = renderHook(
-      ({ username }) => useUsers(username),
+      ({ username }: { username: string }) => useUsers(username),
       { initialProps: { username: "octocat" } },
     );
 

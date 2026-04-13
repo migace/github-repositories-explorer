@@ -8,7 +8,7 @@ export const useUserRepositories = () => {
   const params = useLocalSearchParams<{ username: string }>();
   const username = Array.isArray(params.username)
     ? params.username[0]
-    : params.username ?? "";
+    : (params.username ?? "");
 
   const {
     data,
@@ -20,8 +20,13 @@ export const useUserRepositories = () => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["repositories", username],
-    queryFn: ({ pageParam }) =>
-      githubService.getRepositoriesByUsername(username, pageParam, PER_PAGE),
+    queryFn: ({ pageParam, signal }) =>
+      githubService.getRepositoriesByUsername(
+        username,
+        pageParam,
+        PER_PAGE,
+        signal,
+      ),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PER_PAGE ? allPages.length + 1 : undefined,

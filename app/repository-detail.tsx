@@ -48,10 +48,10 @@ export default function RepoDetails() {
   const params = useLocalSearchParams<{ username: string; repo: string }>();
   const username = Array.isArray(params.username)
     ? params.username[0]
-    : params.username ?? "";
+    : (params.username ?? "");
   const repo = Array.isArray(params.repo)
     ? params.repo[0]
-    : params.repo ?? "";
+    : (params.repo ?? "");
   const { colors } = useTheme();
 
   const dynamicStyles = useMemo(
@@ -85,7 +85,8 @@ export default function RepoDetails() {
     isError,
   } = useQuery({
     queryKey: ["repo", username, repo],
-    queryFn: () => githubService.getRepositoryByName(username, repo),
+    queryFn: ({ signal }) =>
+      githubService.getRepositoryByName(username, repo, signal),
     enabled: !!username && !!repo,
   });
 
@@ -127,11 +128,27 @@ export default function RepoDetails() {
         ) : null}
 
         <View style={styles.statsGrid}>
-          <StatCard icon="star-outline" value={repository.stargazers_count} label="Stars" />
-          <StatCard icon="source-fork" value={repository.forks_count} label="Forks" />
-          <StatCard icon="bug-outline" value={repository.open_issues_count} label="Issues" />
+          <StatCard
+            icon="star-outline"
+            value={repository.stargazers_count}
+            label="Stars"
+          />
+          <StatCard
+            icon="source-fork"
+            value={repository.forks_count}
+            label="Forks"
+          />
+          <StatCard
+            icon="bug-outline"
+            value={repository.open_issues_count}
+            label="Issues"
+          />
           {repository.language ? (
-            <StatCard icon="code-tags" value={repository.language} label="Language" />
+            <StatCard
+              icon="code-tags"
+              value={repository.language}
+              label="Language"
+            />
           ) : null}
         </View>
 
@@ -160,7 +177,11 @@ export default function RepoDetails() {
 
         <View style={[styles.datesCard, dynamicStyles.datesCard]}>
           <View style={styles.dateRow}>
-            <MaterialCommunityIcons name="calendar-plus" size={16} color={colors.onSurfaceVariant} />
+            <MaterialCommunityIcons
+              name="calendar-plus"
+              size={16}
+              color={colors.onSurfaceVariant}
+            />
             <Text variant="bodySmall" style={dynamicStyles.dateText}>
               Created{" "}
               <Text style={dynamicStyles.dateBold}>
@@ -170,7 +191,11 @@ export default function RepoDetails() {
           </View>
           <Divider style={styles.divider} />
           <View style={styles.dateRow}>
-            <MaterialCommunityIcons name="calendar-sync" size={16} color={colors.onSurfaceVariant} />
+            <MaterialCommunityIcons
+              name="calendar-sync"
+              size={16}
+              color={colors.onSurfaceVariant}
+            />
             <Text variant="bodySmall" style={dynamicStyles.dateText}>
               Updated{" "}
               <Text style={dynamicStyles.dateBold}>
@@ -188,7 +213,11 @@ export default function RepoDetails() {
           ]}
           onPress={() => Linking.openURL(repository.html_url)}
         >
-          <MaterialCommunityIcons name="github" size={20} color={colors.onPrimary} />
+          <MaterialCommunityIcons
+            name="github"
+            size={20}
+            color={colors.onPrimary}
+          />
           <Text variant="labelLarge" style={dynamicStyles.githubButtonText}>
             View on GitHub
           </Text>

@@ -4,7 +4,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-
 import { PaperProvider } from "react-native-paper";
 import { Stack } from "expo-router";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -35,19 +34,19 @@ const asyncStoragePersister = createAsyncStoragePersister({
 SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
-  const { theme } = useAppTheme();
+  const { theme, isThemeLoaded } = useAppTheme();
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && isThemeLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isThemeLoaded]);
 
-  if (!loaded) {
+  if (!loaded || !isThemeLoaded) {
     return null;
   }
 
@@ -86,4 +85,3 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
-

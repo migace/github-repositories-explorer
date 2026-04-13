@@ -1,33 +1,39 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const HISTORY_KEY = "@search_history";
 const MAX_HISTORY = 10;
 
 export const useSearchHistory = () => {
   const [history, setHistory] = useState<string[]>([]);
+  const initialized = useRef(false);
 
   useEffect(() => {
     AsyncStorage.getItem(HISTORY_KEY).then((stored) => {
       if (stored) setHistory(JSON.parse(stored));
+      initialized.current = true;
     });
   }, []);
 
-  const addToHistory = useCallback(async (term: string) => {
+  useEffect(() => {
+    if (initialized.current) {
+      if (history.length === 0) {
+        AsyncStorage.removeItem(HISTORY_KEY);
+      } else {
+        AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      }
+    }
+  }, [history]);
+
+  const addToHistory = useCallback((term: string) => {
     if (!term.trim()) return;
-    setHistory((prev) => {
-      const updated = [term, ...prev.filter((h) => h !== term)].slice(
-        0,
-        MAX_HISTORY,
-      );
-      AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-      return updated;
-    });
+    setHistory((prev) =>
+      [term, ...prev.filter((h) => h !== term)].slice(0, MAX_HISTORY),
+    );
   }, []);
 
-  const clearHistory = useCallback(async () => {
+  const clearHistory = useCallback(() => {
     setHistory([]);
-    await AsyncStorage.removeItem(HISTORY_KEY);
   }, []);
 
   return { history, addToHistory, clearHistory };

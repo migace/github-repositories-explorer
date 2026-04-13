@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   separator: {
-    height: 10,
+    height: 24,
   },
   footer: {
     paddingVertical: 16,
