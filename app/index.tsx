@@ -1,7 +1,6 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Stack } from "expo-router";
-import { IconButton, useTheme } from "react-native-paper";
-import { Image } from "expo-image";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import { GithubUsers } from "@/components/github-users/github-users";
 import { useUsers } from "@/components/github-users/hooks/use-users";
 import { SearchUsers } from "@/components/github-users/search-users";
@@ -40,10 +39,31 @@ export default function HomeScreen() {
       );
     }
     if (githubUsers.length > 0) {
+      return <GithubUsers users={githubUsers} />;
+    }
+    if (!username) {
       return (
-        <ScrollView style={styles.users}>
-          <GithubUsers users={githubUsers} />
-        </ScrollView>
+        <View style={styles.emptyState}>
+          <Text style={[styles.emptyIcon, { color: colors.onSurfaceVariant }]}>
+            🔍
+          </Text>
+          <Text
+            variant="titleMedium"
+            style={{ color: colors.onBackground, textAlign: "center" }}
+          >
+            Search GitHub users
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={{
+              color: colors.onSurfaceVariant,
+              textAlign: "center",
+              marginTop: 4,
+            }}
+          >
+            Enter a username to explore their repositories
+          </Text>
+        </View>
       );
     }
     return null;
@@ -58,22 +78,27 @@ export default function HomeScreen() {
           headerTintColor: colors.onSurface,
           headerTitleStyle: { fontWeight: "bold" },
           headerRight: () => <HeaderRight />,
+          headerShadowVisible: false,
         }}
       />
-      <Image
-        style={styles.bannerImage}
-        source={require("@/assets/images/github-profiles.png")}
-        contentFit="cover"
-        transition={1000}
-      />
 
-      <SearchUsers
-        isGithubProfilesLoading={isGithubProfilesLoading}
-        onClick={handleSearch}
-        history={history}
-        onHistorySelect={handleSearch}
-        onHistoryClear={clearHistory}
-      />
+      <View
+        style={[
+          styles.searchWrapper,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.outline,
+          },
+        ]}
+      >
+        <SearchUsers
+          isGithubProfilesLoading={isGithubProfilesLoading}
+          onClick={handleSearch}
+          history={history}
+          onHistorySelect={handleSearch}
+          onHistoryClear={clearHistory}
+        />
+      </View>
 
       <View style={styles.content}>{renderContent()}</View>
     </View>
@@ -81,16 +106,21 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  searchWrapper: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
   content: {
-    padding: 10,
-    alignItems: "flex-start",
-    flexDirection: "column",
     flex: 1,
   },
-  bannerImage: {
-    height: 200,
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+    gap: 8,
   },
-  users: {
-    alignSelf: "stretch",
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 8,
   },
 });

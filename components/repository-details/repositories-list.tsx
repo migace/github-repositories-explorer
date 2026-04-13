@@ -19,6 +19,8 @@ interface IRepositoriesListProps {
   fetchNextPage: (options?: FetchNextPageOptions) => void;
 }
 
+const Separator = () => <View style={styles.separator} />;
+
 export const RepositoriesList = memo(
   ({
     userRepositories,
@@ -35,13 +37,15 @@ export const RepositoriesList = memo(
         renderItem={({ item }) => (
           <RepositoryItem
             name={item.name}
-            description={item.description ?? ""}
+            description={item.description}
             stargazers_count={item.stargazers_count}
+            language={item.language}
             username={item.owner.login}
           />
         )}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
+        ItemSeparatorComponent={Separator}
         ListEmptyComponent={
           <List.Subheader>No repositories available</List.Subheader>
         }
@@ -64,7 +68,10 @@ RepositoriesList.displayName = "RepositoriesList";
 
 const styles = StyleSheet.create({
   wrapper: {
-    padding: 20,
+    padding: 16,
+  },
+  separator: {
+    height: 10,
   },
   footer: {
     paddingVertical: 16,

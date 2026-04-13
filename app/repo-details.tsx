@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Chip, Divider, Text, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
 import { useLocalSearchParams, Stack } from "expo-router";
@@ -6,28 +6,39 @@ import { useQuery } from "@tanstack/react-query";
 import { githubService } from "@/app/services/GithubService";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
-import { Linking } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface IRouteParams {
   username: string;
   repo: string;
 }
 
-const StatItem = ({
+const StatCard = ({
   icon,
   value,
   label,
 }: {
-  icon: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   value: string | number;
   label: string;
 }) => {
   const { colors } = useTheme();
   return (
-    <View style={styles.statItem}>
-      <Text style={[styles.statValue, { color: colors.primary }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>
-        {icon} {label}
+    <View
+      style={[
+        styles.statCard,
+        { backgroundColor: colors.surfaceVariant, borderColor: colors.outline },
+      ]}
+    >
+      <MaterialCommunityIcons name={icon} size={20} color={colors.primary} />
+      <Text
+        variant="titleMedium"
+        style={{ color: colors.onSurface, fontWeight: "700" }}
+      >
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </Text>
+      <Text variant="labelSmall" style={{ color: colors.onSurfaceVariant }}>
+        {label}
       </Text>
     </View>
   );
@@ -57,93 +68,116 @@ export default function RepoDetails() {
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <View
+          style={[
+            styles.headerCard,
+            { backgroundColor: colors.surface, borderColor: colors.outline },
+          ]}
+        >
           <Image
             source={repository.owner.avatar_url}
             style={styles.avatar}
             accessibilityLabel={`Avatar of ${repository.owner.login}`}
           />
           <View style={styles.headerText}>
-            <Text variant="titleLarge" style={{ color: colors.onBackground }}>
+            <Text
+              variant="titleLarge"
+              style={{ color: colors.onSurface, fontWeight: "700" }}
+            >
               {repository.name}
             </Text>
-            <Text
-              variant="bodyMedium"
-              style={{ color: colors.onSurfaceVariant }}
-            >
+            <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
               {repository.owner.login}
             </Text>
           </View>
         </View>
 
-        {repository.description && (
+        {repository.description ? (
           <Text
-            variant="bodyLarge"
+            variant="bodyMedium"
             style={[styles.description, { color: colors.onBackground }]}
           >
             {repository.description}
           </Text>
-        )}
+        ) : null}
 
-        <Divider style={styles.divider} />
-
-        <View style={styles.statsRow}>
-          <StatItem icon="⭐" value={repository.stargazers_count} label="Stars" />
-          <StatItem icon="🍴" value={repository.forks_count} label="Forks" />
-          <StatItem
-            icon="🐛"
-            value={repository.open_issues_count}
-            label="Issues"
-          />
-          {repository.language && (
-            <StatItem icon="💻" value={repository.language} label="Language" />
-          )}
+        <View style={styles.statsGrid}>
+          <StatCard icon="star-outline" value={repository.stargazers_count} label="Stars" />
+          <StatCard icon="source-fork" value={repository.forks_count} label="Forks" />
+          <StatCard icon="bug-outline" value={repository.open_issues_count} label="Issues" />
+          {repository.language ? (
+            <StatCard icon="code-tags" value={repository.language} label="Language" />
+          ) : null}
         </View>
 
-        {repository.topics.length > 0 && (
-          <>
-            <Divider style={styles.divider} />
+        {repository.topics.length > 0 ? (
+          <View style={styles.section}>
             <Text
-              variant="labelLarge"
+              variant="labelMedium"
               style={[styles.sectionLabel, { color: colors.onSurfaceVariant }]}
             >
-              Topics
+              TOPICS
             </Text>
             <View style={styles.topics}>
               {repository.topics.map((topic) => (
-                <Chip key={topic} style={styles.chip} compact>
+                <Chip
+                  key={topic}
+                  compact
+                  style={[
+                    styles.topicChip,
+                    { backgroundColor: colors.primaryContainer },
+                  ]}
+                  textStyle={{ color: colors.onPrimaryContainer, fontSize: 12 }}
+                >
                   {topic}
                 </Chip>
               ))}
             </View>
-          </>
-        )}
+          </View>
+        ) : null}
 
-        <Divider style={styles.divider} />
-
-        <Text
-          variant="labelLarge"
-          style={[styles.sectionLabel, { color: colors.onSurfaceVariant }]}
+        <View
+          style={[
+            styles.datesCard,
+            { backgroundColor: colors.surfaceVariant, borderColor: colors.outline },
+          ]}
         >
-          Dates
-        </Text>
-        <Text style={{ color: colors.onBackground }}>
-          Created: {new Date(repository.created_at).toLocaleDateString()}
-        </Text>
-        <Text style={{ color: colors.onBackground }}>
-          Updated: {new Date(repository.updated_at).toLocaleDateString()}
-        </Text>
+          <View style={styles.dateRow}>
+            <MaterialCommunityIcons name="calendar-plus" size={16} color={colors.onSurfaceVariant} />
+            <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+              Created{" "}
+              <Text style={{ color: colors.onSurface, fontWeight: "600" }}>
+                {new Date(repository.created_at).toLocaleDateString()}
+              </Text>
+            </Text>
+          </View>
+          <Divider style={{ marginVertical: 8 }} />
+          <View style={styles.dateRow}>
+            <MaterialCommunityIcons name="calendar-sync" size={16} color={colors.onSurfaceVariant} />
+            <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+              Updated{" "}
+              <Text style={{ color: colors.onSurface, fontWeight: "600" }}>
+                {new Date(repository.updated_at).toLocaleDateString()}
+              </Text>
+            </Text>
+          </View>
+        </View>
 
-        <Divider style={styles.divider} />
-
-        <Chip
-          icon="github"
+        <TouchableOpacity
+          style={[styles.githubButton, { backgroundColor: colors.primary }]}
           onPress={() => Linking.openURL(repository.html_url)}
-          style={styles.githubChip}
+          activeOpacity={0.8}
         >
-          View on GitHub
-        </Chip>
+          <MaterialCommunityIcons name="github" size={20} color={colors.onPrimary} />
+          <Text
+            variant="labelLarge"
+            style={{ color: colors.onPrimary, fontWeight: "600" }}
+          >
+            View on GitHub
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </>
   );
@@ -151,23 +185,58 @@ export default function RepoDetails() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20, gap: 12 },
-  header: { flexDirection: "row", alignItems: "center", gap: 16 },
-  avatar: { width: 64, height: 64, borderRadius: 32 },
-  headerText: { flex: 1 },
+  content: { padding: 16, gap: 14 },
+  headerCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  avatar: { width: 56, height: 56, borderRadius: 28 },
+  headerText: { flex: 1, gap: 2 },
   description: { lineHeight: 22 },
-  divider: { marginVertical: 8 },
-  statsRow: {
+  statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
-    justifyContent: "space-around",
+    gap: 10,
   },
-  statItem: { alignItems: "center", minWidth: 64 },
-  statValue: { fontSize: 20, fontWeight: "bold" },
-  statLabel: { fontSize: 12, marginTop: 2 },
-  sectionLabel: { marginBottom: 8 },
+  statCard: {
+    flex: 1,
+    minWidth: "44%",
+    alignItems: "center",
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 4,
+  },
+  section: {
+    gap: 10,
+  },
+  sectionLabel: {
+    letterSpacing: 0.8,
+    fontWeight: "600",
+  },
   topics: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  chip: { alignSelf: "flex-start" },
-  githubChip: { alignSelf: "center", marginTop: 8 },
+  topicChip: { height: 28 },
+  datesCard: {
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  githubButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginTop: 4,
+  },
 });

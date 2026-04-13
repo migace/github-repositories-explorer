@@ -28,7 +28,13 @@ export const SortFilterBar = memo(
 
     return (
       <View
-        style={[styles.container, { borderBottomColor: colors.outlineVariant }]}
+        style={[
+          styles.container,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.outline,
+          },
+        ]}
       >
         <ScrollView
           horizontal
@@ -40,9 +46,9 @@ export const SortFilterBar = memo(
             onDismiss={() => setSortMenuVisible(false)}
             anchor={
               <Chip
-                icon="sort"
+                icon="sort-variant"
                 onPress={() => setSortMenuVisible(true)}
-                selected
+                selected={true}
                 style={styles.chip}
                 compact
               >
@@ -63,8 +69,10 @@ export const SortFilterBar = memo(
             ))}
           </Menu>
 
+          <View style={[styles.divider, { backgroundColor: colors.outline }]} />
+
           <Chip
-            icon="filter-off"
+            icon="filter-remove-outline"
             onPress={() => onLanguageChange(null)}
             selected={languageFilter === null}
             style={styles.chip}
@@ -93,7 +101,7 @@ export const SortFilterBar = memo(
             variant="labelSmall"
             style={[styles.count, { color: colors.onSurfaceVariant }]}
           >
-            {filteredCount} / {totalCount} repos
+            Showing {filteredCount} of {totalCount} repos
           </Text>
         )}
       </View>
@@ -108,16 +116,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   row: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     gap: 8,
     flexDirection: "row",
     alignItems: "center",
   },
+  divider: {
+    width: StyleSheet.hairlineWidth,
+    height: 20,
+    marginHorizontal: 2,
+  },
   chip: { height: 32 },
   count: {
     textAlign: "right",
-    paddingHorizontal: 12,
-    paddingBottom: 4,
+    paddingHorizontal: 16,
+    paddingBottom: 6,
   },
 });

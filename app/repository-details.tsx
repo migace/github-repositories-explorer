@@ -39,65 +39,75 @@ export default function RepositoryDetails() {
     );
   }
 
+  if (userRepositories.length === 0) {
+    return null;
+  }
+
+  const owner = userRepositories[0].owner;
+
   return (
-    <View style={[styles.wrapper, { backgroundColor: colors.backdrop }]}>
-      {userRepositories.length > 0 && (
-        <View style={styles.headerWrapper}>
-          <View style={styles.headerContent}>
-            <Image
-              source={userRepositories[0].owner.avatar_url}
-              style={styles.headerImage}
-              accessibilityLabel={`Avatar of ${userRepositories[0].owner.login}`}
-            />
-            <Text
-              style={[styles.headerText, { color: colors.onBackground }]}
-              accessibilityRole="header"
-            >
-              {userRepositories[0].owner.login}
-            </Text>
-          </View>
-
-          <SortFilterBar
-            sort={sort}
-            onSortChange={setSort}
-            languageFilter={languageFilter}
-            onLanguageChange={setLanguageFilter}
-            availableLanguages={availableLanguages}
-            totalCount={userRepositories.length}
-            filteredCount={filteredAndSorted.length}
-          />
-
-          <RepositoriesList
-            userRepositories={filteredAndSorted}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
+    <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.profileHeader,
+          { backgroundColor: colors.surface, borderBottomColor: colors.outline },
+        ]}
+      >
+        <Image
+          source={owner.avatar_url}
+          style={styles.avatar}
+          accessibilityLabel={`Avatar of ${owner.login}`}
+        />
+        <View style={styles.profileInfo}>
+          <Text
+            variant="titleLarge"
+            style={{ color: colors.onSurface, fontWeight: "700" }}
+          >
+            {owner.login}
+          </Text>
+          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+            {userRepositories.length} repositories
+          </Text>
         </View>
-      )}
+      </View>
+
+      <SortFilterBar
+        sort={sort}
+        onSortChange={setSort}
+        languageFilter={languageFilter}
+        onLanguageChange={setLanguageFilter}
+        availableLanguages={availableLanguages}
+        totalCount={userRepositories.length}
+        filteredCount={filteredAndSorted.length}
+      />
+
+      <RepositoriesList
+        userRepositories={filteredAndSorted}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    alignSelf: "stretch",
     flex: 1,
   },
-  headerWrapper: {
-    flex: 1,
-  },
-  headerImage: {
-    width: 100,
-    height: 100,
-    marginRight: 20,
-  },
-  headerContent: {
-    alignItems: "flex-start",
-    padding: 20,
+  profileHeader: {
     flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    gap: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  headerText: {
-    fontSize: 32,
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+  },
+  profileInfo: {
+    gap: 2,
   },
 });

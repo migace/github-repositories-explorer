@@ -1,5 +1,6 @@
 import { StyleSheet, View } from "react-native";
-import { Text, MD3DarkTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface IErrorStateProps {
   message?: string;
@@ -7,27 +8,35 @@ interface IErrorStateProps {
 
 export const ErrorState = ({
   message = "Something went wrong. Please try again.",
-}: IErrorStateProps) => (
-  <View style={styles.container}>
-    <Text style={styles.icon}>⚠️</Text>
-    <Text style={styles.message}>{message}</Text>
-  </View>
-);
+}: IErrorStateProps) => {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.container}>
+      <MaterialCommunityIcons
+        name="alert-circle-outline"
+        size={48}
+        color={colors.error}
+      />
+      <Text
+        variant="bodyLarge"
+        style={[styles.message, { color: colors.onBackground }]}
+      >
+        {message}
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
-    gap: 12,
-  },
-  icon: {
-    fontSize: 40,
+    padding: 32,
+    gap: 14,
   },
   message: {
-    color: MD3DarkTheme.colors.error,
     textAlign: "center",
-    fontSize: 16,
+    lineHeight: 22,
   },
 });

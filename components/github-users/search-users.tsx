@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Chip, IconButton, Text, TextInput, useTheme } from "react-native-paper";
+import { Chip, IconButton, Text, TextInput, useTheme } from "react-native-paper";
 
 interface ISearchUsersProps {
   isGithubProfilesLoading: boolean;
@@ -31,41 +31,52 @@ export const SearchUsers = ({
   };
 
   return (
-    <View>
-      <TextInput
-        label="Github profile"
-        value={githubProfile}
-        onChangeText={setGithubProfile}
-        onSubmitEditing={handleSearch}
-        returnKeyType="search"
-        style={styles.searchInput}
-      />
-      <Button
-        dark
-        style={styles.searchButton}
-        textColor={colors.background}
-        mode="text"
-        icon="card-search-outline"
-        loading={isGithubProfilesLoading}
-        onPress={handleSearch}
-      >
-        Search
-      </Button>
+    <View style={styles.wrapper}>
+      <View style={styles.inputRow}>
+        <TextInput
+          label="Search GitHub user"
+          value={githubProfile}
+          onChangeText={setGithubProfile}
+          onSubmitEditing={handleSearch}
+          returnKeyType="search"
+          mode="outlined"
+          left={<TextInput.Icon icon="github" />}
+          right={
+            githubProfile.length > 0 ? (
+              <TextInput.Icon
+                icon="close-circle"
+                onPress={() => setGithubProfile("")}
+              />
+            ) : undefined
+          }
+          style={styles.input}
+          outlineStyle={[styles.inputOutline, { borderColor: colors.outline }]}
+        />
+        <IconButton
+          icon={isGithubProfilesLoading ? "loading" : "magnify"}
+          mode="contained"
+          onPress={handleSearch}
+          disabled={isGithubProfilesLoading || !githubProfile.trim()}
+          style={styles.searchButton}
+          animated
+        />
+      </View>
 
       {history.length > 0 && (
         <View style={styles.historyContainer}>
           <View style={styles.historyHeader}>
             <Text
               variant="labelSmall"
-              style={{ color: colors.onSurfaceVariant }}
+              style={[styles.historyLabel, { color: colors.onSurfaceVariant }]}
             >
               Recent searches
             </Text>
             <IconButton
-              icon="close"
-              size={14}
+              icon="delete-sweep-outline"
+              size={16}
               onPress={onHistoryClear}
               accessibilityLabel="Clear search history"
+              iconColor={colors.onSurfaceVariant}
             />
           </View>
           <View style={styles.chips}>
@@ -74,7 +85,9 @@ export const SearchUsers = ({
                 key={term}
                 compact
                 onPress={() => handleHistorySelect(term)}
-                style={styles.chip}
+                style={[styles.chip, { backgroundColor: colors.surfaceVariant }]}
+                textStyle={{ color: colors.onSurfaceVariant }}
+                icon="history"
               >
                 {term}
               </Chip>
@@ -87,29 +100,47 @@ export const SearchUsers = ({
 };
 
 const styles = StyleSheet.create({
-  searchInput: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    alignSelf: "stretch",
+  wrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  input: {
+    flex: 1,
+    height: 52,
+  },
+  inputOutline: {
+    borderRadius: 10,
   },
   searchButton: {
-    alignSelf: "stretch",
+    borderRadius: 10,
+    margin: 0,
   },
   historyContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    marginTop: 4,
   },
   historyHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginLeft: 4,
+  },
+  historyLabel: {
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
   },
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 6,
+    paddingBottom: 4,
   },
   chip: {
-    height: 28,
+    height: 30,
   },
 });
